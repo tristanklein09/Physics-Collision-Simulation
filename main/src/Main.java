@@ -23,6 +23,7 @@ public class Main extends JFrame {
         mainMenuPanel.add(enterButton);
     }
 
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new Main());
     }
