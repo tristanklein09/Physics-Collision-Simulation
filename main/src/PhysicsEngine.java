@@ -26,6 +26,11 @@ public class PhysicsEngine {
         b.position = b.position.add(b.velocity.scale(deltaTime)); // Equivalent of position += velocity * deltaTime
     }
 
+    public void spawnCircleBody(Vector position, Vector velocity, Vector acceleration, double mass, double radius, double restitution) {
+        Body ball = new Body(position, velocity, acceleration, mass, radius, restitution);
+        bodyList.add(ball);
+    }
+
 
     //Where all the updates happen
     public void step() {

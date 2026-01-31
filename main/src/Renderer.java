@@ -1,11 +1,10 @@
-//TODO: Add card layout so that JPanels display properly
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
 public class Renderer extends JFrame{
     private static Renderer instance;
+    public boolean simActive = false;
 
     //Card Layout
     CardLayout cardLayout = new CardLayout();
@@ -19,6 +18,10 @@ public class Renderer extends JFrame{
     //Scenario1
     public JPanel scenario1Card = new JPanel();
     public JLabel scenario1Label = new JLabel("Scenario 1 running");
+
+    //Simulation Panel
+    //All the drawing logic will happen here
+    public SimulationPanel simulationPanel = new SimulationPanel(PhysicsEngine.getInstance());
 
     Renderer() {
         instance = this;
@@ -39,7 +42,8 @@ public class Renderer extends JFrame{
 
         //Scenario 1 card
         scenario1Card.setLayout(new BorderLayout());
-        scenario1Card.add(scenario1Label, BorderLayout.NORTH);
+        scenario1Card.add(simulationPanel, BorderLayout.CENTER);
+        //scenario1Card.add(scenario1Label, BorderLayout.NORTH);
 
         //Add cards
         cardPanel.add(mainMenuCard, "MAIN_MENU");
@@ -57,8 +61,11 @@ public class Renderer extends JFrame{
     public void loadSandbox1() {
         PhysicsEngine physicsEngine = PhysicsEngine.getInstance();
         cardLayout.show(cardPanel, "SCENARIO1"); //Switches to the other card panel
-    }
 
+        physicsEngine.spawnCircleBody(new Vector(100, 100), new Vector(10, 10), new Vector(0, 0), 1, 10, 1);
+
+        simActive = true;
+    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -75,8 +82,12 @@ public class Renderer extends JFrame{
             });
 
             //Updates the scene at the deltaTime interval
-            Timer timer = new Timer((int) (16), e ->{ //TODO: MAKE IT UPDATE AT BASED ON DELTA TIME
-               renderer.repaint();
+            Timer timer = new Timer((int) (physicsEngine.deltaTime * 1000), e ->{
+                if (renderer.simActive) {
+                    physicsEngine.step(); //Updates the physics
+                    renderer.simulationPanel.repaint(); //Test whether to go outside or inside the loop
+                }
+                renderer.repaint();
             });
             timer.start();;
         });
