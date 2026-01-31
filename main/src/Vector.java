@@ -18,11 +18,13 @@ public class Vector {
         return result;
     }
 
+    //Multiply by a scalar constant k
     public  Vector scale(double k) {
         Vector result = new Vector((this.x * k), (this.y * k));
         return result;
     }
 
+    //Calculate the dot product
     public double dot(Vector v) {
         double result = (this.x * v.x) + (this.y * v.y);
         return result;
