@@ -5,7 +5,8 @@ public class PhysicsEngine {
     private static PhysicsEngine instance;
 
     //This means that the frame rate doesn't impact it
-    public final double deltaTime = 0.016; //Simulates updating at 60fps - 1/60
+    public final double updateFPS = 120; //How many updates per second - what FPS to simulate
+    public final double deltaTime = 1.0 / updateFPS; //At what time interval to update to simulate the updateFPS
     public ArrayList<Body> bodyList = new ArrayList<Body>(); //List to keep track of the bodies
 
     //World boundaries - where the walls are
@@ -29,7 +30,7 @@ public class PhysicsEngine {
         instance = this;
     }
 
-    public static PhysicsEngine getInstance() {
+    public static PhysicsEngine getPEInstance() {
         if (instance == null) { //Handling null
             instance = new PhysicsEngine();
         }

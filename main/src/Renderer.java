@@ -5,6 +5,7 @@ import java.awt.event.*;
 public class Renderer extends JFrame{
     private static Renderer instance;
     public boolean simActive = false;
+    public boolean antialiasing = false;
 
     //Card Layout
     CardLayout cardLayout = new CardLayout();
@@ -12,15 +13,17 @@ public class Renderer extends JFrame{
 
     //Main Menu
     public JPanel mainMenuCard = new JPanel();
+    public JPanel mainMenuCenterPanel = new JPanel();
     public JLabel titleLabel = new JLabel("Collision Simulator", SwingConstants.CENTER);
     public JButton enterButton = new JButton("Enter Simulation");
+    public JCheckBox antialiasingCheckBox = new JCheckBox("Enable Antialiasing");
 
     //Scenario1
     public JPanel scenario1Card = new JPanel();
 
     //Simulation Panel
     //All the drawing logic will happen here
-    public SimulationPanel simulationPanel = new SimulationPanel(PhysicsEngine.getInstance());
+    public SimulationPanel simulationPanel = new SimulationPanel(PhysicsEngine.getPEInstance(), this);
 
     Renderer() {
         instance = this;
@@ -35,15 +38,18 @@ public class Renderer extends JFrame{
         setContentPane(cardPanel); //Card Layout lives on one container
 
         //Main menu card
-        mainMenuCard.setLayout(new GridLayout(2, 1, 10, 10));
-        mainMenuCard.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        mainMenuCard.setLayout(new GridLayout(3, 1, 10, 10));
+        mainMenuCard.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+        mainMenuCenterPanel.setLayout(new BoxLayout(mainMenuCenterPanel, BoxLayout.Y_AXIS));
+        antialiasingCheckBox.setAlignmentX(Component.CENTER_ALIGNMENT);
         mainMenuCard.add(titleLabel);
+        mainMenuCard.add(mainMenuCenterPanel);
+        mainMenuCenterPanel.add(antialiasingCheckBox);
         mainMenuCard.add(enterButton);
 
         //Scenario 1 card
         scenario1Card.setLayout(new BorderLayout());
         scenario1Card.add(simulationPanel, BorderLayout.CENTER);
-        //scenario1Card.add(scenario1Label, BorderLayout.NORTH);
 
         //Add cards
         cardPanel.add(mainMenuCard, "MAIN_MENU");
@@ -54,12 +60,15 @@ public class Renderer extends JFrame{
         setVisible(true);
     }
 
-    public static Renderer getInstance() {
+    public static Renderer getRendererInstance() {
+        if (instance == null) { //Handling null
+            instance = new Renderer();
+        }
         return instance;
     }
 
     public void loadSandbox1() {
-        PhysicsEngine physicsEngine = PhysicsEngine.getInstance();
+        PhysicsEngine physicsEngine = PhysicsEngine.getPEInstance();
         cardLayout.show(cardPanel, "SCENARIO1"); //Switches to the other card panel
 
         physicsEngine.spawnCircleBody(new Vector(400, 400), new Vector(150, 100), new Vector(0, 0), 1, 20, 1);
@@ -70,16 +79,32 @@ public class Renderer extends JFrame{
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             Renderer renderer = new Renderer();
-            PhysicsEngine physicsEngine = PhysicsEngine.getInstance();
+            PhysicsEngine physicsEngine = PhysicsEngine.getPEInstance();
 
-            //Event for the button
-            renderer.enterButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    //Takes us to the place where collisions happen
-                    renderer.loadSandbox1();
-                }
-            });
+            //Main menu events
+            if (!renderer.simActive) {
+                //Event for the button
+                renderer.enterButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        //Takes us to the place where collisions happen
+                        renderer.loadSandbox1();
+                    }
+                });
+
+                //Event for antialiasing Check Box
+                renderer.antialiasingCheckBox.addItemListener(new ItemListener() {
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        boolean isSelected = (e.getStateChange() == ItemEvent.SELECTED);
+                        if (isSelected) {
+                           renderer.antialiasing = true;
+                        } else if (!isSelected) {
+                            renderer.antialiasing = false;
+                        }
+                    }
+                });
+            }
 
             //Updates the scene at the deltaTime interval
             Timer timer = new Timer((int) (physicsEngine.deltaTime * 1000), e ->{

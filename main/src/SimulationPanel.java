@@ -1,16 +1,16 @@
 import javax.swing.*;
 import java.awt.*;
 
-//TODO: ADD ANTI-ALIASING
-
 //The class that handles the drawing of the objects
 public class SimulationPanel extends JPanel {
 
     private final PhysicsEngine physicsEngine;
+    private final Renderer renderer;
 
     //Pass through an already existing physicsEngine instance
-    public SimulationPanel(PhysicsEngine physicsEngine) {
+    public SimulationPanel(PhysicsEngine physicsEngine, Renderer renderer) {
         this.physicsEngine = physicsEngine;
+        this.renderer = renderer;
         setDoubleBuffered(true); //Smoother animation
     }
 
@@ -21,6 +21,14 @@ public class SimulationPanel extends JPanel {
         super.paintComponent(g); //?
         //Casting to graphics 2D gives better control
         Graphics2D g2D = (Graphics2D) g;
+
+        //Enable anti-aliasing
+        if (renderer.antialiasing) {
+            g2D.setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING,
+                    RenderingHints.VALUE_ANTIALIAS_ON
+            );
+        }
 
         //Draw all bodies
         for (Body b : physicsEngine.bodyList) {
