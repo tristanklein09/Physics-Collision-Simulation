@@ -11,7 +11,6 @@ public class SimulationPanel extends JPanel {
     //Pass through an already existing physicsEngine instance
     public SimulationPanel(PhysicsEngine physicsEngine) {
         this.physicsEngine = physicsEngine;
-
         setDoubleBuffered(true); //Smoother animation
     }
 
@@ -20,7 +19,6 @@ public class SimulationPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g); //?
-
         //Casting to graphics 2D gives better control
         Graphics2D g2D = (Graphics2D) g;
 

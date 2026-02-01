@@ -17,7 +17,6 @@ public class Renderer extends JFrame{
 
     //Scenario1
     public JPanel scenario1Card = new JPanel();
-    public JLabel scenario1Label = new JLabel("Scenario 1 running");
 
     //Simulation Panel
     //All the drawing logic will happen here
@@ -28,7 +27,8 @@ public class Renderer extends JFrame{
 
         //Frame setup
         setTitle("Collision Simulator");
-        setSize(600, 600);
+        setSize(800, 800); //May be issue with 720p screens
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -62,7 +62,7 @@ public class Renderer extends JFrame{
         PhysicsEngine physicsEngine = PhysicsEngine.getInstance();
         cardLayout.show(cardPanel, "SCENARIO1"); //Switches to the other card panel
 
-        physicsEngine.spawnCircleBody(new Vector(100, 100), new Vector(10, 10), new Vector(0, 0), 1, 10, 1);
+        physicsEngine.spawnCircleBody(new Vector(400, 400), new Vector(150, 100), new Vector(0, 0), 1, 20, 1);
 
         simActive = true;
     }
@@ -85,7 +85,7 @@ public class Renderer extends JFrame{
             Timer timer = new Timer((int) (physicsEngine.deltaTime * 1000), e ->{
                 if (renderer.simActive) {
                     physicsEngine.step(); //Updates the physics
-                    renderer.simulationPanel.repaint(); //Test whether to go outside or inside the loop
+                    renderer.simulationPanel.repaint();
                 }
                 renderer.repaint();
             });
