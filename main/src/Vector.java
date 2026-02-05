@@ -14,7 +14,7 @@ public class Vector {
 
     //v is the vector being subtracted
     public Vector subtract(Vector v) {
-        Vector result = new Vector((this.x - v.x), (this.x - v.x));
+        Vector result = new Vector((this.x - v.x), (this.y - v.y));
         return result;
     }
 
@@ -38,12 +38,12 @@ public class Vector {
 
     //Unit Vector - useful for direction
     public Vector normalise() {
-        //Avoid crashing due to division by zero error
-        if (this.x == 0 || this.y == 0 ) {
+        //Avoid crashing due to division by zero error caused by zero magnitude
+        double magnitude = this.modulus();
+        if (magnitude == 0) {
             return new Vector(0, 0);
         }
 
-        double magnitude = this.modulus();
         Vector normalised = new Vector((this.x / magnitude),  (this.y / magnitude));
         return normalised;
     }

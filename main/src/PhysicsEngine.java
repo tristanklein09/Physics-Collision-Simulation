@@ -69,11 +69,19 @@ public class PhysicsEngine {
         switch (checkWallCollisions(b)) {
             case NONE:
                 break;
-            case LEFT, RIGHT:
-                b.velocity.x = (b.velocity.x * -1) * b.restitution;
+            case LEFT:
+                //Check if the body is moving towards the wall
+                if (b.velocity.x < 0) b.velocity.x = (b.velocity.x * -1) * b.restitution;
                 break;
-            case TOP, BOTTOM:
-                b.velocity.y = (b.velocity.y * -1) * b.restitution;
+            case RIGHT:
+                if (b.velocity.x > 0) b.velocity.x = (b.velocity.x * -1) * b.restitution;
+                break;
+            case TOP:
+                if (b.velocity.y < 0) b.velocity.y = (b.velocity.y * -1) * b.restitution;
+                break;
+            case BOTTOM:
+                if (b.velocity.y > 0) b.velocity.y = (b.velocity.y * -1) * b.restitution;
+                break;
         }
     }
 
