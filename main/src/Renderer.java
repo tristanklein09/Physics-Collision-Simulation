@@ -69,9 +69,10 @@ public class Renderer extends JFrame{
 
     public void loadSandbox1() {
         PhysicsEngine physicsEngine = PhysicsEngine.getPEInstance();
+        SimulationPanel simulationPanel = new SimulationPanel(physicsEngine, this);
         cardLayout.show(cardPanel, "SCENARIO1"); //Switches to the other card panel
 
-        physicsEngine.spawnCircleBody(new Vector(400, 400), new Vector(200, 150), new Vector(0, 100), 1, 20, 0.8);
+        physicsEngine.spawnCircleBody(new Vector(400, 400), new Vector(200, 200), new Vector(0, 981), 1, 15, 0.85);
 
         simActive = true;
     }
@@ -109,6 +110,12 @@ public class Renderer extends JFrame{
             //Updates the scene at the deltaTime interval
             Timer timer = new Timer((int) (physicsEngine.deltaTime * 1000), e ->{
                 if (renderer.simActive) {
+                    //TODO: Add a ways so that it only changes when a resize event has happened - should increase performance
+                    physicsEngine.setWorldBounds(
+                            renderer.simulationPanel.getWidth(),
+                            renderer.simulationPanel.getHeight()
+                    );
+
                     physicsEngine.step(); //Updates the physics
                     renderer.simulationPanel.repaint();
                 }

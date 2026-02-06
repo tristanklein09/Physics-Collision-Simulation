@@ -11,6 +11,7 @@ public class SimulationPanel extends JPanel {
     public SimulationPanel(PhysicsEngine physicsEngine, Renderer renderer) {
         this.physicsEngine = physicsEngine;
         this.renderer = renderer;
+
         setDoubleBuffered(true); //Smoother animation
     }
 
@@ -49,5 +50,6 @@ public class SimulationPanel extends JPanel {
         //Drawing the circle
         g2D.setColor(Color.RED);
         g2D.fillOval(drawX, drawY, diameter, diameter);
+
     }
 }
