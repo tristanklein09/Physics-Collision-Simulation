@@ -72,7 +72,8 @@ public class Renderer extends JFrame{
         SimulationPanel simulationPanel = new SimulationPanel(physicsEngine, this);
         cardLayout.show(cardPanel, "SCENARIO1"); //Switches to the other card panel
 
-        physicsEngine.spawnCircleBody(new Vector2D(400, 400), new Vector2D(300, 300), new Vector2D(0, 981), 1, 20, 1);
+        physicsEngine.spawnCircleBody(new Vector2D(400, 400), new Vector2D(300, 300), new Vector2D(0, 981), 1, 30, 1);
+        physicsEngine.spawnCircleBody(new Vector2D(500, 500), new Vector2D(300, 300), new Vector2D(0, 981), 1, 30, 1);
 
         simActive = true;
     }

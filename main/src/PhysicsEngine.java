@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class PhysicsEngine {
     private static PhysicsEngine instance;
@@ -17,7 +16,7 @@ public class PhysicsEngine {
 
     //Physics constants
     public double gravityPXS2 = 981; //Gravity in pixels per second squared (pxs^-2)
-    public final double VELOCITY_THRESHOLD = 5; //Threshold for velocity to be considered as zero, to prevent jittering
+    public final double VELOCITY_THRESHOLD = 1; //Threshold for velocity to be considered as zero, to prevent jittering
 
     public enum wallCollisionType {
         NONE,
@@ -147,6 +146,43 @@ public class PhysicsEngine {
         }
     }
 
+    //Collision detection between circular bodies
+    //TODO: Optimise
+    public ArrayList<ArrayList<Body>> checkCircleCollisions() {
+        //Possibly use a queues somewhere?
+
+        ArrayList<ArrayList<Body>> collidingBodies = new ArrayList<ArrayList<Body>>();
+        int arrayListCounter = 0;
+
+        //We track with which body any given body is colliding with
+        for (Body b : bodyList) {
+            ArrayList<Body> collisions = new ArrayList<>();
+            collisions.add(b);
+
+            Vector2D bPosAdjusted = new Vector2D(b.position.x + b.radius, b.position.y + b.radius); //Adjust to get the true center of the circle
+
+            for (Body body : bodyList) {
+                if (b == body) continue; //Skips checking for a collision with itself
+
+                Vector2D bodyPosAdjusted = new Vector2D(body.position.x + body.radius, body.position.y + body.radius);
+
+                double distance = (bPosAdjusted.subtract(bodyPosAdjusted)).modulus();
+                double radiiSum = b.radius + body.radius;
+
+                if (distance <= radiiSum) { //Collision has occurred
+                    collisions.add(body);
+                    System.out.println("Collision has occurred");
+                }
+            }
+
+            if (collisions.size() > 1) { //Only store collisions if there are actually collisions taking place
+                collidingBodies.add(collisions);
+            }
+        }
+
+        return collidingBodies;
+    }
+
     //Where all the updates happen
     public void step() {
         //Update the motion of all bodies
@@ -154,5 +190,6 @@ public class PhysicsEngine {
             updateMotion(b);
             resolveWallCollisions(b);
         }
+        checkCircleCollisions();
     }
 }
