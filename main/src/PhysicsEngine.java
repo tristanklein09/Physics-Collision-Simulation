@@ -1,25 +1,22 @@
 import java.util.ArrayList;
+import java.util.Vector;
 
-//This class handles all the scenarios to be loaded in
 public class PhysicsEngine {
     private static PhysicsEngine instance;
 
-    //This means that the frame rate doesn't impact it
-    public final double updateFPS = 120; //How many updates per second - what FPS to simulate
-    public final double deltaTime = 1.0 / updateFPS; //At what time interval to update to simulate the updateFPS
+    //Timing
+    public final double updateFPS = 120; //Frame rate to simulate
+    public final double deltaTime = 1.0 / updateFPS; //At what time interval to update all actions
     public ArrayList<Body> bodyList = new ArrayList<Body>(); //List to keep track of the bodies
 
-    //World boundaries - where the walls are
-    //Maximum x or y coordinates
+    //World boundaries
     public double worldXMax;
     public double worldYMax;
-    //Minimum x or y coordinates
     public double worldXMin = 0;
     public double worldYMin = 0;
 
-    //Gravity in pixels per second squared (pxs^-2)
-    public double gravityPXS2 = 981;
-
+    //Physics constants
+    public double gravityPXS2 = 981; //Gravity in pixels per second squared (pxs^-2)
     public final double VELOCITY_THRESHOLD = 5; //Threshold for velocity to be considered as zero, to prevent jittering
 
     public enum wallCollisionType {
@@ -53,23 +50,29 @@ public class PhysicsEngine {
         b.position = b.position.add(b.velocity.scale(deltaTime)); // Equivalent of position += velocity * deltaTime
     }
 
-    public void spawnCircleBody(Vector position, Vector velocity, Vector acceleration, double mass, double radius, double restitution) {
+    public void spawnCircleBody(Vector2D position, Vector2D velocity, Vector2D acceleration, double mass, double radius, double restitution) {
         Body ball = new Body(position, velocity, acceleration, mass, radius, restitution);
         bodyList.add(ball);
     }
 
     //Wall collisions
     public wallCollisionType checkWallCollisions(Body b) {
-        double x = b.position.x;
-        double y = b.position.y;
+        double currentX = b.position.x;
+        double currentY = b.position.y;
         double r = b.radius;
 
+        //Used to checking if there will be a collision between this check and the next check - prevents tunneling
+        Vector2D nextPos = b.position.add(b.velocity.scale(deltaTime));
+        double nextX = nextPos.x;
+        double nextY = nextPos.y;
+
         //Checking which wall there has been a collision with
+        //We also use nextPos to check if there will be a collision between the next delta time, if so treat it as a collision
         //g.fillOval treats the top left corner as 0,0 so some adjustments need to be made in the logic to compensate for this ??
-        if (x - r <= worldXMin) return wallCollisionType.LEFT;
-        if (x + r >= worldXMax) return wallCollisionType.RIGHT;
-        if (y - r <= worldYMin) return wallCollisionType.TOP;
-        if (y + r >= worldYMax) return wallCollisionType.BOTTOM;
+        if (currentX - r <= worldXMin || nextX - r <= worldXMin) return wallCollisionType.LEFT;
+        if (currentX + r >= worldXMax || nextX + r >= worldXMax) return wallCollisionType.RIGHT;
+        if (currentY - r <= worldYMin || nextY - r <= worldYMin) return wallCollisionType.TOP;
+        if (currentY + r >= worldYMax || nextY + r >= worldYMax) return wallCollisionType.BOTTOM;
 
         return wallCollisionType.NONE; //Skipped all if statements therefore go to base case
     }
@@ -81,48 +84,64 @@ public class PhysicsEngine {
             case NONE:
                 break;
             case LEFT:
-                //Check if the body is moving towards the wall
-                if (b.velocity.x < 0) b.velocity.x = (b.velocity.x * -1) * b.restitution;
+                //Check if the body is moving towards the wall, only change velocity/position if it is to prevent jitter
+                if (b.velocity.x < 0) {
+                    b.position.x = worldXMin + b.radius;
+                    b.velocity.x = (b.velocity.x * -1) * b.restitution;
+                }
+
                 if (Math.abs(b.velocity.x) < VELOCITY_THRESHOLD) {
                     b.velocity.x = 0; //To prevent jittering when the velocity is very low
                     b.acceleration.x = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
                 }
                 if (Math.abs(b.velocity.y) < VELOCITY_THRESHOLD) {
-                    b.velocity.y = 0; //To prevent jittering when the velocity is very low
-                    b.acceleration.y = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                    b.velocity.y = 0;
+                    b.acceleration.y = 0;
                 }
                 break;
             case RIGHT:
-                if (b.velocity.x > 0) b.velocity.x = (b.velocity.x * -1) * b.restitution;
+                if (b.velocity.x > 0) {
+                    b.position.x = worldXMax - b.radius;
+                    b.velocity.x = (b.velocity.x * -1) * b.restitution;
+                }
+
                 if (Math.abs(b.velocity.x) < VELOCITY_THRESHOLD) {
-                    b.velocity.x = 0; //To prevent jittering when the velocity is very low
-                    b.acceleration.x = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                    b.velocity.x = 0;
+                    b.acceleration.x = 0;
                 }
                 if (Math.abs(b.velocity.y) < VELOCITY_THRESHOLD) {
-                    b.velocity.y = 0; //To prevent jittering when the velocity is very low
-                    b.acceleration.y = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                    b.velocity.y = 0;
+                    b.acceleration.y = 0;
                 }
                 break;
             case TOP:
-                if (b.velocity.y < 0) b.velocity.y = (b.velocity.y * -1) * b.restitution;
+                if (b.velocity.y < 0) {
+                    b.position.y = worldYMin + b.radius;
+                    b.velocity.y = (b.velocity.y * -1) * b.restitution;
+                }
+
                 if (Math.abs(b.velocity.y) < VELOCITY_THRESHOLD) {
-                    b.velocity.y = 0; //To prevent jittering when the velocity is very low
-                    b.acceleration.y = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                    b.velocity.y = 0;
+                    b.acceleration.y = 0;
                 }
                 if (Math.abs(b.velocity.x) < VELOCITY_THRESHOLD) {
-                    b.velocity.x = 0; //To prevent jittering when the velocity is very low
-                    b.acceleration.x = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                    b.velocity.x = 0;
+                    b.acceleration.x = 0;
                 }
                 break;
             case BOTTOM:
-                if (b.velocity.y > 0) b.velocity.y = (b.velocity.y * -1) * b.restitution;
+                if (b.velocity.y > 0) {
+                    b.position.y = worldYMax - b.radius;
+                    b.velocity.y = (b.velocity.y * -1) * b.restitution;
+                }
+
                 if (Math.abs(b.velocity.y) < VELOCITY_THRESHOLD) {
-                    b.velocity.y = 0; //To prevent jittering when the velocity is very low
-                    b.acceleration.y = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                    b.velocity.y = 0;
+                    b.acceleration.y = 0;
                 }
                 if (Math.abs(b.velocity.x) < VELOCITY_THRESHOLD) {
-                    b.velocity.x = 0; //To prevent jittering when the velocity is very low
-                    b.acceleration.x = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                    b.velocity.x = 0;
+                    b.acceleration.x = 0;
                 }
                 break;
         }

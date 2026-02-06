@@ -5,7 +5,7 @@ import java.awt.event.*;
 public class Renderer extends JFrame{
     private static Renderer instance;
     public boolean simActive = false;
-    public boolean antialiasing = false;
+    public boolean antialiasing = true; //The checkbox is automatically selected
 
     //Card Layout
     CardLayout cardLayout = new CardLayout();
@@ -16,7 +16,7 @@ public class Renderer extends JFrame{
     public JPanel mainMenuCenterPanel = new JPanel();
     public JLabel titleLabel = new JLabel("Collision Simulator", SwingConstants.CENTER);
     public JButton enterButton = new JButton("Enter Simulation");
-    public JCheckBox antialiasingCheckBox = new JCheckBox("Enable Antialiasing");
+    public JCheckBox antialiasingCheckBox = new JCheckBox("Enable Antialiasing", true);
 
     //Scenario1
     public JPanel scenario1Card = new JPanel();
@@ -72,7 +72,7 @@ public class Renderer extends JFrame{
         SimulationPanel simulationPanel = new SimulationPanel(physicsEngine, this);
         cardLayout.show(cardPanel, "SCENARIO1"); //Switches to the other card panel
 
-        physicsEngine.spawnCircleBody(new Vector(400, 400), new Vector(200, 200), new Vector(0, 981), 1, 15, 0.85);
+        physicsEngine.spawnCircleBody(new Vector2D(400, 400), new Vector2D(300, 300), new Vector2D(0, 981), 1, 20, 1);
 
         simActive = true;
     }

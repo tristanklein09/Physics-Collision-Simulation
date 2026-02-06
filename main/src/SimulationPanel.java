@@ -15,8 +15,7 @@ public class SimulationPanel extends JPanel {
         setDoubleBuffered(true); //Smoother animation
     }
 
-    //Might not work
-    //handles drawing the collision objects
+    //Handles drawing the collision objects
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g); //?
