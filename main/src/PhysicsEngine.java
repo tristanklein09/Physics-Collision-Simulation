@@ -17,6 +17,8 @@ public class PhysicsEngine {
     double worldXMin = 0;
     double worldYMin = 0;
 
+    public final double VELOCITY_THRESHOLD = 1; //Threshold for velocity to be considered as zero, to prevent jittering
+
     public enum wallCollisionType {
         NONE,
         LEFT,
@@ -72,15 +74,47 @@ public class PhysicsEngine {
             case LEFT:
                 //Check if the body is moving towards the wall
                 if (b.velocity.x < 0) b.velocity.x = (b.velocity.x * -1) * b.restitution;
+                if (Math.abs(b.velocity.x) < VELOCITY_THRESHOLD) {
+                    b.velocity.x = 0; //To prevent jittering when the velocity is very low
+                    b.acceleration.x = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                }
+                if (Math.abs(b.velocity.y) < VELOCITY_THRESHOLD) {
+                    b.velocity.y = 0; //To prevent jittering when the velocity is very low
+                    b.acceleration.y = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                }
                 break;
             case RIGHT:
                 if (b.velocity.x > 0) b.velocity.x = (b.velocity.x * -1) * b.restitution;
+                if (Math.abs(b.velocity.x) < VELOCITY_THRESHOLD) {
+                    b.velocity.x = 0; //To prevent jittering when the velocity is very low
+                    b.acceleration.x = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                }
+                if (Math.abs(b.velocity.y) < VELOCITY_THRESHOLD) {
+                    b.velocity.y = 0; //To prevent jittering when the velocity is very low
+                    b.acceleration.y = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                }
                 break;
             case TOP:
                 if (b.velocity.y < 0) b.velocity.y = (b.velocity.y * -1) * b.restitution;
+                if (Math.abs(b.velocity.y) < VELOCITY_THRESHOLD) {
+                    b.velocity.y = 0; //To prevent jittering when the velocity is very low
+                    b.acceleration.y = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                }
+                if (Math.abs(b.velocity.x) < VELOCITY_THRESHOLD) {
+                    b.velocity.x = 0; //To prevent jittering when the velocity is very low
+                    b.acceleration.x = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                }
                 break;
             case BOTTOM:
                 if (b.velocity.y > 0) b.velocity.y = (b.velocity.y * -1) * b.restitution;
+                if (Math.abs(b.velocity.y) < VELOCITY_THRESHOLD) {
+                    b.velocity.y = 0; //To prevent jittering when the velocity is very low
+                    b.acceleration.y = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                }
+                if (Math.abs(b.velocity.x) < VELOCITY_THRESHOLD) {
+                    b.velocity.x = 0; //To prevent jittering when the velocity is very low
+                    b.acceleration.x = 0; //Stop accelerating in that direction as well, otherwise it will just start moving again
+                }
                 break;
         }
     }
