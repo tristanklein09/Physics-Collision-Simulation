@@ -18,6 +18,8 @@ public class PhysicsEngine {
     public double gravityPXS2 = 981; //Gravity in pixels per second squared (pxs^-2)
     public final double VELOCITY_THRESHOLD = 1; //Threshold for velocity to be considered as zero, to prevent jittering
 
+    public final double overlapCorrectionFactor = 0.2;
+
     public enum wallCollisionType {
         NONE,
         LEFT,
@@ -148,39 +150,88 @@ public class PhysicsEngine {
 
     //Collision detection between circular bodies
     //TODO: Optimise
-    public ArrayList<ArrayList<Body>> checkCircleCollisions() {
-        //Possibly use a queues somewhere?
+    public ArrayList<Pair<Body>> checkCircleCollisions() {
+        //Colliding bodies to be processed as pairs due to using linear impulse collision resolution
+        ArrayList<Pair<Body>> collidingBodies = new ArrayList<>();
 
-        ArrayList<ArrayList<Body>> collidingBodies = new ArrayList<ArrayList<Body>>();
-        int arrayListCounter = 0;
+        // Loop through each unique pair exactly once
+        for (int i = 0; i < bodyList.size(); i++) {
+            Body b1 = bodyList.get(i);
 
-        //We track with which body any given body is colliding with
-        for (Body b : bodyList) {
-            ArrayList<Body> collisions = new ArrayList<>();
-            collisions.add(b);
+            Vector2D b1PosAdjusted = new Vector2D((b1.position.x + b1.radius), (b1.position.y + b1.radius));
 
-            Vector2D bPosAdjusted = new Vector2D(b.position.x + b.radius, b.position.y + b.radius); //Adjust to get the true center of the circle
+            //Starting at i+1 means that permutations of already existing pairs aren't considered i.e a,b and b,a
+            for (int j = i + 1; j < bodyList.size(); j++) {
+                Body b2 = bodyList.get(j);
 
-            for (Body body : bodyList) {
-                if (b == body) continue; //Skips checking for a collision with itself
+                Vector2D b2PosAdjusted = new Vector2D((b2.position.x + b2.radius), (b2.position.y + b2.radius));
 
-                Vector2D bodyPosAdjusted = new Vector2D(body.position.x + body.radius, body.position.y + body.radius);
+                double distance = b1PosAdjusted.subtract(b2PosAdjusted).modulus();
+                double radiiSum = b1.radius + b2.radius;
 
-                double distance = (bPosAdjusted.subtract(bodyPosAdjusted)).modulus();
-                double radiiSum = b.radius + body.radius;
-
-                if (distance <= radiiSum) { //Collision has occurred
-                    collisions.add(body);
+                if (distance <= radiiSum) { // Collision detected
+                    collidingBodies.add(new Pair<>(b1, b2));
                     System.out.println("Collision has occurred");
                 }
-            }
-
-            if (collisions.size() > 1) { //Only store collisions if there are actually collisions taking place
-                collidingBodies.add(collisions);
             }
         }
 
         return collidingBodies;
+    }
+
+    public Vector2D impulseVector(Body a, Body b) {
+        //Take the coefficient of restitution to be the smaller of the two values
+        double e = Math.min(a.restitution, b.restitution);
+        Vector2D vRel = a.velocity.subtract(b.velocity); //Relative velocity
+
+        Vector2D vARadius = new Vector2D(a.radius, a.radius); //Position vector of the radius from circle top left
+        Vector2D vBRadius = new Vector2D(b.radius, b.radius);
+
+        //To find the collision normal which is the impulseDirection
+        Vector2D vDelta = (a.position.add(vARadius)).subtract((b.position.add(vBRadius)));
+        Vector2D vNormal = vDelta.normalise();
+
+        double impulseMagnitude = (-(1 + e) * (vRel.dot(vNormal)) / (a.invMass + b.invMass));
+        Vector2D impulseDirection = vNormal;
+
+        Vector2D jn = impulseDirection.scale(impulseMagnitude);
+
+        return jn;
+    }
+
+    public void resolveCircularCollisions() {
+        ArrayList<Pair<Body>> collidingBodies = checkCircleCollisions();
+
+        for (Pair<Body> p : collidingBodies) {
+            Body a = p.key();
+            Body b = p.value();
+
+            Vector2D jn =  impulseVector(a, b); //Calculate the impulse vector
+
+            //Only apply impulse if the bodies are actually moving towards each other
+            Vector2D vRel = a.velocity.subtract(b.velocity);
+            Vector2D vARadius = new Vector2D(a.radius, a.radius); //Position vector of the radius from circle top left
+            Vector2D vBRadius = new Vector2D(b.radius, b.radius);
+            Vector2D vDelta = (a.position.add(vARadius)).subtract((b.position.add(vBRadius)));
+            Vector2D vNormal = vDelta.normalise();
+            if (vRel.dot(vNormal) > 0) continue;
+
+            //Apply the impulse vector
+            a.velocity = a.velocity.add(jn);
+            b.velocity = b.velocity.add(jn.scale(-1)); //-jn
+
+            //Positional correction due to overlap
+            double penetration = (a.radius + b.radius) - vDelta.modulus(); // vDelta.modulus() is the distance between the centres
+            if (penetration <= 0) continue; //No overlap so no correction needed
+            double effectivePenetration = penetration * overlapCorrectionFactor;
+
+            double totalInvMass = a.invMass + b.invMass;
+            Vector2D aCorrection = vNormal.scale(effectivePenetration).scale(a.invMass / totalInvMass); //Amount we need to correct by
+            Vector2D bCorrection = vNormal.scale(effectivePenetration).scale(b.invMass / totalInvMass);
+
+            a.position.add(aCorrection); //Correcting the position
+            b.position.subtract(bCorrection);
+        }
     }
 
     //Where all the updates happen
@@ -190,6 +241,6 @@ public class PhysicsEngine {
             updateMotion(b);
             resolveWallCollisions(b);
         }
-        checkCircleCollisions();
+        resolveCircularCollisions();
     }
 }

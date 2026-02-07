@@ -72,8 +72,8 @@ public class Renderer extends JFrame{
         SimulationPanel simulationPanel = new SimulationPanel(physicsEngine, this);
         cardLayout.show(cardPanel, "SCENARIO1"); //Switches to the other card panel
 
-        physicsEngine.spawnCircleBody(new Vector2D(400, 400), new Vector2D(300, 300), new Vector2D(0, 981), 1, 30, 1);
-        physicsEngine.spawnCircleBody(new Vector2D(500, 500), new Vector2D(300, 300), new Vector2D(0, 981), 1, 30, 1);
+        physicsEngine.spawnCircleBody(new Vector2D(400, 400), new Vector2D(400, 400), new Vector2D(0, 981), 1, 35, 1);
+        physicsEngine.spawnCircleBody(new Vector2D(500, 500), new Vector2D(400, 400), new Vector2D(0, 981), 1, 35, 1);
 
         simActive = true;
     }
@@ -111,7 +111,7 @@ public class Renderer extends JFrame{
             //Updates the scene at the deltaTime interval
             Timer timer = new Timer((int) (physicsEngine.deltaTime * 1000), e ->{
                 if (renderer.simActive) {
-                    //TODO: Add a ways so that it only changes when a resize event has happened - should increase performance
+                    //TODO: Add a ways so that it only changes when a resize event has happened - should increase performance as we're not constantly getting the dimensions
                     physicsEngine.setWorldBounds(
                             renderer.simulationPanel.getWidth(),
                             renderer.simulationPanel.getHeight()
