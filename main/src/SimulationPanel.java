@@ -6,6 +6,7 @@ public class SimulationPanel extends JPanel {
 
     private final PhysicsEngine physicsEngine;
     private final Renderer renderer;
+    private final double borderFactor = 0.075;
 
     //Pass through an already existing physicsEngine instance
     public SimulationPanel(PhysicsEngine physicsEngine, Renderer renderer) {
@@ -46,9 +47,12 @@ public class SimulationPanel extends JPanel {
         int drawY = (int)(y - r);
         int diameter = (int)(r * 2);
 
-        //Drawing the circle
         g2D.setColor(Color.RED);
         g2D.fillOval(drawX, drawY, diameter, diameter);
 
+        float borderThickness = (float) (r * borderFactor);
+        g2D.setStroke(new BasicStroke(borderThickness));
+        g2D.setColor(Color.BLACK);
+        g2D.drawOval(drawX, drawY, diameter, diameter);
     }
 }
