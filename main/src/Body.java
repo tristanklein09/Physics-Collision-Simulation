@@ -1,6 +1,6 @@
 //Currently only a 2D Circular body
 public class Body {
-    public Vector2D position;
+    public Vector2D position; //Position to the centre
     public Vector2D velocity;
     public Vector2D acceleration;
     public double mass;
@@ -12,9 +12,11 @@ public class Body {
         this.position = position;
         this.velocity = velocity;
         this.acceleration = acceleration;
+
         this.mass = mass;
         if (mass <= 0) throw new IllegalArgumentException("Mass must be greater than zero.");
         invMass = 1 / this.mass;
+
         this.radius = radius;
         this.restitution = restitution;
     }

@@ -156,21 +156,18 @@ public class PhysicsEngine {
 
         // Loop through each unique pair exactly once
         for (int i = 0; i < bodyList.size(); i++) {
-            Body b1 = bodyList.get(i);
-
-            Vector2D b1PosAdjusted = new Vector2D((b1.position.x + b1.radius), (b1.position.y + b1.radius));
+            Body a = bodyList.get(i);
 
             //Starting at i+1 means that permutations of already existing pairs aren't considered i.e a,b and b,a
             for (int j = i + 1; j < bodyList.size(); j++) {
-                Body b2 = bodyList.get(j);
+                Body b = bodyList.get(j);
 
-                Vector2D b2PosAdjusted = new Vector2D((b2.position.x + b2.radius), (b2.position.y + b2.radius));
-
-                double distance = b1PosAdjusted.subtract(b2PosAdjusted).modulus();
-                double radiiSum = b1.radius + b2.radius;
+                Vector2D vDelta = a.position.subtract(b.position);
+                double distance = vDelta.modulus();
+                double radiiSum = a.radius + b.radius;
 
                 if (distance <= radiiSum) { // Collision detected
-                    collidingBodies.add(new Pair<>(b1, b2));
+                    collidingBodies.add(new Pair<>(a, b));
                     System.out.println("Collision has occurred");
                 }
             }
@@ -184,11 +181,8 @@ public class PhysicsEngine {
         double e = Math.min(a.restitution, b.restitution);
         Vector2D vRel = a.velocity.subtract(b.velocity); //Relative velocity
 
-        Vector2D vARadius = new Vector2D(a.radius, a.radius); //Position vector of the radius from circle top left
-        Vector2D vBRadius = new Vector2D(b.radius, b.radius);
-
         //To find the collision normal which is the impulseDirection
-        Vector2D vDelta = (a.position.add(vARadius)).subtract((b.position.add(vBRadius)));
+        Vector2D vDelta = a.position.subtract(b.position);
         Vector2D vNormal = vDelta.normalise();
 
         double impulseMagnitude = (-(1 + e) * (vRel.dot(vNormal)) / (a.invMass + b.invMass));
@@ -212,25 +206,22 @@ public class PhysicsEngine {
             Vector2D vRel = a.velocity.subtract(b.velocity);
             Vector2D vARadius = new Vector2D(a.radius, a.radius); //Position vector of the radius from circle top left
             Vector2D vBRadius = new Vector2D(b.radius, b.radius);
-            Vector2D vDelta = (a.position.add(vARadius)).subtract((b.position.add(vBRadius)));
+            Vector2D vDelta = a.position.subtract(b.position);
             Vector2D vNormal = vDelta.normalise();
             if (vRel.dot(vNormal) > 0) continue;
 
             //Apply the impulse vector
-            a.velocity = a.velocity.add(jn);
-            b.velocity = b.velocity.add(jn.scale(-1)); //-jn
+            a.velocity = a.velocity.add(jn.scale(a.invMass));
+            b.velocity = b.velocity.add(jn.scale(-1).scale(b.invMass)); //-jn
 
             //Positional correction due to overlap
             double penetration = (a.radius + b.radius) - vDelta.modulus(); // vDelta.modulus() is the distance between the centres
             if (penetration <= 0) continue; //No overlap so no correction needed
-            double effectivePenetration = penetration * overlapCorrectionFactor;
-
             double totalInvMass = a.invMass + b.invMass;
-            Vector2D aCorrection = vNormal.scale(effectivePenetration).scale(a.invMass / totalInvMass); //Amount we need to correct by
-            Vector2D bCorrection = vNormal.scale(effectivePenetration).scale(b.invMass / totalInvMass);
+            Vector2D correction = vNormal.scale((penetration / totalInvMass) * overlapCorrectionFactor);
 
-            a.position.add(aCorrection); //Correcting the position
-            b.position.subtract(bCorrection);
+            a.position.add(correction.scale(a.invMass)); //Applying the correction
+            b.position.subtract(correction.scale(b.invMass));
         }
     }
 

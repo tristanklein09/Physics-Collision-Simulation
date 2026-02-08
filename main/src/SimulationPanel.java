@@ -6,7 +6,7 @@ public class SimulationPanel extends JPanel {
 
     private final PhysicsEngine physicsEngine;
     private final Renderer renderer;
-    private final double borderFactor = 0.075;
+    private final double borderFactor = 0.08;
 
     //Pass through an already existing physicsEngine instance
     public SimulationPanel(PhysicsEngine physicsEngine, Renderer renderer) {
@@ -43,6 +43,7 @@ public class SimulationPanel extends JPanel {
         double y = b.position.y;
         double r = b.radius;
 
+        //This adjusts for the centre
         int drawX = (int)(x - r);
         int drawY = (int)(y - r);
         int diameter = (int)(r * 2);
