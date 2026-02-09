@@ -191,7 +191,7 @@ public class PhysicsEngine {
 
                 if (distance <= radiiSum) { // Collision detected
                     collidingBodies.add(new Pair<>(a, b));
-                    System.out.println("Collision has occurred");
+                    //System.out.println("Collision has occurred");
                 }
             }
         }

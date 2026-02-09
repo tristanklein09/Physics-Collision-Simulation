@@ -32,22 +32,24 @@ public class Renderer extends JFrame{
     public JPanel debugPanel = new JPanel();
     public JScrollPane debugScrollPanel = new JScrollPane(debugPanel);
     public JLabel debugTitleLabel = new JLabel("Debug Menu", SwingConstants.CENTER);
-    public JLabel spawnShapesLabel = new JLabel("Spawn shapes", SwingConstants.CENTER);
+    public JLabel spawnObjectsLabel = new JLabel("Spawn objects", SwingConstants.CENTER);
     public JCheckBox showAABBBox= new JCheckBox("Show AABBs", true); //Checkboxes
     public JCheckBox toggleGravityBox = new JCheckBox("Toggle Gravity", true);
-    public JComboBox shapeComboBox = new JComboBox(shapeOptions);
-    public JTextField shapeRadiusText = new JTextField(10);
-    public JTextField shapeMassText = new JTextField(10);
-    public JTextField shapeRestitutionText = new JTextField(10);
+    public JComboBox objectComboBox = new JComboBox(shapeOptions);
+    public JTextField circleRadiusText = new JTextField(10);
+    public JTextField objectMassText = new JTextField(10);
+    public JTextField objectRestitutionText = new JTextField(10);
     public JTextField velocityText = new JTextField(10);
     public JTextField positionText = new JTextField(10);
-    public JButton spawnShapeButton = new JButton("Spawn Shape");
-    public JLabel shapeTypeLabel = new JLabel("Shape Type:");
+    public JTextField accelerationText = new JTextField(10);
+    public JButton spawnObjectButton = new JButton("Spawn Object");
+    public JLabel ObjectTypeLabel = new JLabel("Object Type:");
     public JLabel shapeRadiusLabel = new JLabel("Radius:");
     public JLabel shapeMassLabel = new JLabel("Mass:");
     public JLabel shapeRestitutionLabel = new JLabel("Restitution:");
     public JLabel velocityLabel = new JLabel("Velocity (x,y):");
     public JLabel positionLabel = new JLabel("Position (x,y):");
+    public JLabel accelerationLabel = new JLabel("Acceleration (x,y):");
 
     //Simulation Panel
     //All the drawing logic will happen here
@@ -87,7 +89,7 @@ public class Renderer extends JFrame{
         debugScrollPanel.setViewportView(debugPanel);
         debugPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-
+        //Grid bag layout debug menu
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
@@ -97,89 +99,98 @@ public class Renderer extends JFrame{
         debugPanel.add(debugTitleLabel, gbc);
         debugTitleLabel.setFont(new Font(debugTitleLabel.getFont().getName(), Font.BOLD, 18));
 
-        gbc.gridy = 1;
+        gbc.gridy++;
         gbc.gridwidth = 1;
         gbc.insets = labelInsets;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
         debugPanel.add(showAABBBox, gbc);
 
-        gbc.gridy = 2;
+        gbc.gridy++;
         gbc.insets = labelInsets;
         gbc.anchor = GridBagConstraints.WEST;
         debugPanel.add(toggleGravityBox, gbc);
 
-        gbc.gridy = 3;
+        gbc.gridy++;
         gbc.gridwidth = 2;
         gbc.insets = subTitleInsets;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
-        debugPanel.add(spawnShapesLabel, gbc);
-        spawnShapesLabel.setFont(new Font(debugTitleLabel.getFont().getName(), Font.BOLD, 15));
+        debugPanel.add(spawnObjectsLabel, gbc);
+        spawnObjectsLabel.setFont(new Font(debugTitleLabel.getFont().getName(), Font.BOLD, 15));
 
-        gbc.gridy = 4;
+        gbc.gridy++;
         gbc.gridwidth = 1;
         gbc.insets = labelInsets;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.WEST;
-        debugPanel.add(shapeTypeLabel, gbc);
+        debugPanel.add(ObjectTypeLabel, gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx++;
         gbc.anchor = GridBagConstraints.EAST;
-        debugPanel.add(shapeComboBox, gbc);
+        debugPanel.add(objectComboBox, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 5;
+        gbc.gridx--;
+        gbc.gridy++;
         gbc.anchor = GridBagConstraints.WEST;
         debugPanel.add(velocityLabel, gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx++;
         gbc.anchor = GridBagConstraints.EAST;
         debugPanel.add(velocityText, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 6;
+        gbc.gridx--;
+        gbc.gridy++;
+        gbc.anchor = GridBagConstraints.WEST;
+        debugPanel.add(accelerationLabel, gbc);
+
+        gbc.gridx++;
+        gbc.anchor = GridBagConstraints.EAST;
+        debugPanel.add(accelerationText, gbc);
+
+        gbc.gridx--;
+        gbc.gridy++;
         gbc.anchor = GridBagConstraints.WEST;
         debugPanel.add(positionLabel, gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx++;
         gbc.anchor = GridBagConstraints.EAST;
         debugPanel.add(positionText, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 7;
+        gbc.gridx--;
+        gbc.gridy++;
         gbc.anchor = GridBagConstraints.WEST;
         debugPanel.add(shapeRadiusLabel, gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx++;
         gbc.anchor = GridBagConstraints.EAST;
-        debugPanel.add(shapeRadiusText, gbc);
+        debugPanel.add(circleRadiusText, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 8;
+        gbc.gridx--;
+        gbc.gridy++;
         gbc.anchor = GridBagConstraints.WEST;
         debugPanel.add(shapeMassLabel, gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx++;
         gbc.anchor = GridBagConstraints.EAST;
-        debugPanel.add(shapeMassText, gbc);
+        debugPanel.add(objectMassText, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 9;
+        gbc.gridx--;
+        gbc.gridy++;
         gbc.anchor = GridBagConstraints.WEST;
         debugPanel.add(shapeRestitutionLabel, gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx++;
         gbc.anchor = GridBagConstraints.EAST;
-        debugPanel.add(shapeRestitutionText, gbc);
+        debugPanel.add(objectRestitutionText, gbc);
 
-        gbc.gridx = 0;
-        gbc.gridy = 10;
+        gbc.gridx--;
+        gbc.gridy++;
         gbc.gridwidth = 2;
         gbc.insets = buttonInsets;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
-        debugPanel.add(spawnShapeButton, gbc);
+        debugPanel.add(spawnObjectButton, gbc);
 
         simulationPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
@@ -219,9 +230,11 @@ public class Renderer extends JFrame{
     }
 
     public static void main(String[] args) {
+        Renderer renderer = new Renderer();
+        PhysicsEngine physicsEngine = PhysicsEngine.getPEInstance();
+        DebugParser debugParser = new DebugParser();
+
         SwingUtilities.invokeLater(() -> {
-            Renderer renderer = new Renderer();
-            PhysicsEngine physicsEngine = PhysicsEngine.getPEInstance();
 
             //Main menu events
             if (!renderer.simActive) {
@@ -248,6 +261,46 @@ public class Renderer extends JFrame{
                 });
             }
 
+            //Events for the debug menu
+            renderer.showAABBBox.addItemListener(new ItemListener() { //Event for the show AABB checkbox
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    boolean isSelected = (e.getStateChange() == ItemEvent.SELECTED);
+                    if (isSelected) {
+                        renderer.showAABB = true;
+                    } else if (!isSelected) {
+                        renderer.showAABB = false;
+                    }
+                }
+            });
+            renderer.toggleGravityBox.addItemListener(new ItemListener() { //Event for gravity checkbox
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    boolean isSelected = (e.getStateChange() == ItemEvent.SELECTED);
+                    if (isSelected) {
+                        renderer.toggleGravity = true;
+                    } else if (!isSelected) {
+                        renderer.toggleGravity = false;
+                    }
+                }
+            });
+            renderer.spawnObjectButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    Vector2D position = debugParser.parseVector(renderer.positionText.getText());
+                    Vector2D velocity = debugParser.parseVector(renderer.velocityText.getText());
+                    Vector2D acceleration = debugParser.parseVector(renderer.accelerationText.getText());
+                    double mass = debugParser.parseDouble(renderer.objectMassText.getText());
+                    double restitution = debugParser.parseDouble(renderer.objectRestitutionText.getText());
+                    double radius = debugParser.parseDouble(renderer.circleRadiusText.getText());
+
+                    if (renderer.objectComboBox.getSelectedIndex() == 0) { //Is a circle
+                        physicsEngine.spawnCircleBody(position, velocity, acceleration, mass, radius, restitution);
+                    }
+
+                }
+            });
+
             //Updates the scene at the deltaTime interval
             Timer timer = new Timer((int) (physicsEngine.deltaTime * 1000), e ->{
 
@@ -259,32 +312,6 @@ public class Renderer extends JFrame{
                     );
 
                     physicsEngine.step(); //Updates the physics
-
-                    //Events for the debug menu
-                    renderer.showAABBBox.addItemListener(new ItemListener() { //Event for the show AABB checkbox
-                        @Override
-                        public void itemStateChanged(ItemEvent e) {
-                            boolean isSelected = (e.getStateChange() == ItemEvent.SELECTED);
-                            if (isSelected) {
-                                renderer.showAABB = true;
-                            } else if (!isSelected) {
-                                renderer.showAABB = false;
-                            }
-                        }
-                    });
-                    renderer.toggleGravityBox.addItemListener(new ItemListener() { //Event for gravity checkbox
-                        @Override
-                        public void itemStateChanged(ItemEvent e) {
-                            boolean isSelected = (e.getStateChange() == ItemEvent.SELECTED);
-                            if (isSelected) {
-                                renderer.toggleGravity = true;
-                            } else if (!isSelected) {
-                                renderer.toggleGravity = false;
-                            }
-                        }
-                    });
-
-
                     renderer.simulationPanel.repaint();
                 }
                 renderer.repaint();
