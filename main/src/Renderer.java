@@ -73,11 +73,11 @@ public class Renderer extends JFrame{
         cardLayout.show(cardPanel, "SCENARIO1"); //Switches to the other card panel
 
         physicsEngine.spawnCircleBody(new Vector2D(400, 400), new Vector2D(400, 400), new Vector2D(0, 981), 1, 25, 1);
-        physicsEngine.spawnCircleBody(new Vector2D(500, 500), new Vector2D(400, 500), new Vector2D(0, 981), 1, 40, 1);
-        physicsEngine.spawnCircleBody(new Vector2D(300, 300), new Vector2D(-400, -400), new Vector2D(0, 981), 1, 30, 1);
-        physicsEngine.spawnCircleBody(new Vector2D(100, 200), new Vector2D(-500, -200), new Vector2D(0, 981), 1, 15, 1);
+        physicsEngine.spawnCircleBody(new Vector2D(500, 500), new Vector2D(500, 500), new Vector2D(0, 981), 2, 50, 1);
+        physicsEngine.spawnCircleBody(new Vector2D(300, 300), new Vector2D(-400, -400), new Vector2D(0, 981), 1.25, 30, 1);
+        physicsEngine.spawnCircleBody(new Vector2D(100, 200), new Vector2D(-600, -500), new Vector2D(0, 981), 0.25, 15, 1);
         physicsEngine.spawnCircleBody(new Vector2D(150, 300), new Vector2D(500, -200), new Vector2D(0, 981), 1, 20, 1);
-        physicsEngine.spawnCircleBody(new Vector2D(600, 600), new Vector2D(-500, 200), new Vector2D(0, 981), 1, 35, 1);
+        physicsEngine.spawnCircleBody(new Vector2D(600, 600), new Vector2D(-500, 200), new Vector2D(0, 981), 1.5, 35, 1);
 
 
         simActive = true;

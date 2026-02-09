@@ -56,6 +56,29 @@ public class PhysicsEngine {
         bodyList.add(ball);
     }
 
+    //Compute swept AABB
+    public void computerAABB(Body b) {
+        Vector2D nextPos = b.position.add(b.velocity.scale(deltaTime));
+
+        // Current bounds
+        double currentMinX = b.position.x - b.radius;
+        double currentMaxX = b.position.x + b.radius;
+        double currentMinY = b.position.y - b.radius;
+        double currentMaxY = b.position.y + b.radius;
+
+        // Next bounds
+        double nextMinX = nextPos.x - b.radius;
+        double nextMaxX = nextPos.x + b.radius;
+        double nextMinY = nextPos.y - b.radius;
+        double nextMaxY = nextPos.y + b.radius;
+
+        // Swept bounds (take min/max of both)
+        b.aabbMinX = Math.min(currentMinX, nextMinX);
+        b.aabbMaxX = Math.max(currentMaxX, nextMaxX);
+        b.aabbMinY = Math.min(currentMinY, nextMinY);
+        b.aabbMaxY = Math.max(currentMaxY, nextMaxY);
+    }
+
     //Wall collisions
     public wallCollisionType checkWallCollisions(Body b) {
         double currentX = b.position.x;
@@ -229,6 +252,8 @@ public class PhysicsEngine {
     public void step() {
         //Update the motion of all bodies
         for (Body b: bodyList) {
+            b.acceleration = new Vector2D(0, gravityPXS2); //Apply gravity to all bodies, can be changed to apply different forces
+            computerAABB(b);
             updateMotion(b);
             resolveWallCollisions(b);
         }
