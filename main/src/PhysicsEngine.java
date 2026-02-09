@@ -250,9 +250,15 @@ public class PhysicsEngine {
 
     //Where all the updates happen
     public void step() {
+        Renderer renderer = Renderer.getRendererInstance();
         //Update the motion of all bodies
         for (Body b: bodyList) {
-            b.acceleration = new Vector2D(0, gravityPXS2); //Apply gravity to all bodies, can be changed to apply different forces
+            if (renderer.toggleGravity) {
+                b.acceleration = new Vector2D(0, gravityPXS2); //Apply gravity to all bodies, can be changed to apply different forces
+            } else {
+                b.acceleration = new Vector2D(0,0); //No gravity
+            }
+
             computerAABB(b);
             updateMotion(b);
             resolveWallCollisions(b);

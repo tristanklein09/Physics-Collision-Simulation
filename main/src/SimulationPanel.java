@@ -56,11 +56,12 @@ public class SimulationPanel extends JPanel {
         g2D.setColor(Color.BLACK);
         g2D.drawOval(drawX, drawY, diameter, diameter);
 
-        //AABB
-        g2D.setColor(Color.MAGENTA);
-        int aabbX = (int) (b.aabbMaxX - b.aabbMinX);
-        int aabbY = (int) (b.aabbMaxY - b.aabbMinY);
-        g2D.drawRect(drawX, drawY, aabbX, aabbY);
-
+        if (renderer.showAABB) {
+            //AABB
+            g2D.setColor(Color.MAGENTA);
+            int aabbX = (int) (b.aabbMaxX - b.aabbMinX);
+            int aabbY = (int) (b.aabbMaxY - b.aabbMinY);
+            g2D.drawRect(drawX, drawY, aabbX, aabbY);
+        }
     }
 }
