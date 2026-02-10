@@ -43,6 +43,7 @@ public class Renderer extends JFrame{
     public JTextField positionText = new JTextField(10);
     public JTextField accelerationText = new JTextField(10);
     public JButton spawnObjectButton = new JButton("Spawn Object");
+    public JButton deleteAllObjectsButton = new JButton("Delete All Objects");
     public JLabel ObjectTypeLabel = new JLabel("Object Type:");
     public JLabel shapeRadiusLabel = new JLabel("Radius:");
     public JLabel shapeMassLabel = new JLabel("Mass:");
@@ -50,6 +51,7 @@ public class Renderer extends JFrame{
     public JLabel velocityLabel = new JLabel("Velocity (x,y):");
     public JLabel positionLabel = new JLabel("Position (x,y):");
     public JLabel accelerationLabel = new JLabel("Acceleration (x,y):");
+    public JLabel timePerStepLabel = new JLabel("Time per step: N/A");
 
     //Simulation Panel
     //All the drawing logic will happen here
@@ -98,6 +100,15 @@ public class Renderer extends JFrame{
         gbc.anchor = GridBagConstraints.CENTER;
         debugPanel.add(debugTitleLabel, gbc);
         debugTitleLabel.setFont(new Font(debugTitleLabel.getFont().getName(), Font.BOLD, 18));
+
+        gbc.gridy++;
+        gbc.gridwidth = 1;
+        gbc.insets = labelInsets;
+        gbc.anchor = GridBagConstraints.WEST;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        debugPanel.add(timePerStepLabel, gbc);
+
+        timePerStepLabel.setPreferredSize(new Dimension(150, 20));
 
         gbc.gridy++;
         gbc.gridwidth = 1;
@@ -191,6 +202,13 @@ public class Renderer extends JFrame{
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
         debugPanel.add(spawnObjectButton, gbc);
+
+        gbc.gridy++;
+        gbc.gridwidth = 2;
+        gbc.insets = buttonInsets;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.anchor = GridBagConstraints.CENTER;
+        debugPanel.add(deleteAllObjectsButton, gbc);
 
         simulationPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
 
@@ -300,6 +318,12 @@ public class Renderer extends JFrame{
 
                 }
             });
+            renderer.deleteAllObjectsButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    physicsEngine.bodyList.clear();
+                }
+            });
 
             //Updates the scene at the deltaTime interval
             Timer timer = new Timer((int) (physicsEngine.deltaTime * 1000), e ->{
@@ -310,6 +334,8 @@ public class Renderer extends JFrame{
                             renderer.simulationPanel.getWidth(),
                             renderer.simulationPanel.getHeight()
                     );
+
+                    renderer.timePerStepLabel.setText("Time per step: " + physicsEngine.timePerStep);
 
                     physicsEngine.step(); //Updates the physics
                     renderer.simulationPanel.repaint();

@@ -7,6 +7,7 @@ public class PhysicsEngine {
     public final double updateFPS = 120; //Frame rate to simulate
     public final double deltaTime = 1.0 / updateFPS; //At what time interval to update all actions
     public ArrayList<Body> bodyList = new ArrayList<Body>(); //List to keep track of the bodies
+    public double timePerStep; //Used to track how long each step takes, for debugging and optimisation purposes
 
     //World boundaries
     public double worldXMax;
@@ -251,6 +252,8 @@ public class PhysicsEngine {
     //Where all the updates happen
     public void step() {
         Renderer renderer = Renderer.getRendererInstance();
+        Time time = new Time();
+        long startTime = time.startTime();
         //Update the motion of all bodies
         for (Body b: bodyList) {
             if (renderer.toggleGravity) {
@@ -264,5 +267,7 @@ public class PhysicsEngine {
             resolveWallCollisions(b);
         }
         resolveCircularCollisions();
+
+        timePerStep = time.endTime(startTime);
     }
 }

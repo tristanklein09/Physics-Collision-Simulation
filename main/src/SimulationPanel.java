@@ -63,5 +63,7 @@ public class SimulationPanel extends JPanel {
             int aabbY = (int) (b.aabbMaxY - b.aabbMinY);
             g2D.drawRect(drawX, drawY, aabbX, aabbY);
         }
+
+        g2D.setColor(Color.ORANGE);
     }
 }
